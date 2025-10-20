@@ -6,7 +6,7 @@ infra/.terraform.lock.hcl
 infra/*.tfstate
 infra/*.tfstate.backup
 
-steps.md
+steps*.md
 pam_venv
 
 
