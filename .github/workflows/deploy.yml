@@ -1,0 +1,64 @@
+name: Deploy to Droplet
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infra 
+        shell: bash
+
+      steps:
+       # Checkout the repository to the GitHub Actions runner
+        - name: Checkout
+          uses: actions/checkout@v4
+        
+        - name: Setup Terraform
+          uses: hashicorp/setup-terraform@v3
+          with:
+            terraform_version: 1.13.4
+          
+        - name: Configure SSH Key for Digital Ocean
+          uses: webfactory/ssh-agent@v0.5.4
+          with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+        - name: Write secret variables to environment folder
+          run: |
+            echo 'do_token=${{ secrets.DO_TOKEN }}' > environments.auto.tfvars
+          working-directory: ./infra
+        
+        # Initialize a new or existing Terraform working directory
+        - name: Terraform Init
+          run: terraform init
+
+        # Checks that all Terraform configuration files adhere to a canonical format
+        - name: Terraform Format
+          run: terraform fmt -check
+        
+        # Generates an execution plan for Terraform
+        - name: Terraform Plan
+          env:
+            TF_VAR_project_name: ${{ vars.PROJECT_NAME }}
+            TF_VAR_env: ${{ vars.ENV || 'prod'}}
+            TF_VAR_region: ${{ vars.REGION || 'lon1'}}
+            TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+            TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+            TF_VAR_app_port: ${{ vars.APP_PORT || '80'}}
+          run: terraform plan -out=tfplan
+        
+        - name: Terraform Apply
+          if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+          env:
+            TF_VAR_project_name: ${{ vars.PROJECT_NAME }}
+            TF_VAR_env: ${{ vars.ENV || 'prod'}}
+            TF_VAR_region: ${{ vars.REGION || 'lon1'}}
+            TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
+            TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
+            TF_VAR_app_port: ${{ vars.APP_PORT || '80'}}
+          run: terraform apply -auto-approve tfplan
