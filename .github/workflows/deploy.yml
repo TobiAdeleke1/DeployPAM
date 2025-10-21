@@ -31,13 +31,16 @@ jobs:
       - name: Write secret variables to environment folder
         working-directory: ./infra
         run: |
-          cat  > environments.auto.tfvars <<'HCL'
-          do_token        = "${{ secrets.DO_TOKEN }}"
-          ssh_public_key  = "${{ secrets.SSH_PUBLIC_KEY }}"
-          ssh_private_key = <<EOF
-          "${{ secrets.SSH_PRIVATE_KEY }}"
-          EOF
-          HCL
+          set -euo pipefail
+          jq -n \
+           --arg do_token "${{ secrets.DO_TOKEN }}" \
+           --arg ssh_public_key "${{ secrets.SSH_PUBLIC_KEY }}" \
+           --arg ssh_private_key "${{ secrets.SSH_PRIVATE_KEY }}" \
+           '{
+            "do_token": $do_token,
+            "ssh_public_key": $ssh_public_key,
+            "ssh_private_key": $ssh_private_key
+           }' > environments.auto.tfvars.json
          
         
       # Initialize a new or existing Terraform working directory
