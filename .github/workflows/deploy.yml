@@ -50,7 +50,7 @@ jobs:
       # Generates an execution plan for Terraform
       - name: Terraform Plan
         env:
-          TF_VAR_project_name: ${{ vars.PROJECT_NAME }}
+          TF_VAR_project_name: ${{ vars.PROJECT_NAME || 'pam'}}
           TF_VAR_env: ${{ vars.ENV || 'prod'}}
           TF_VAR_region: ${{ vars.REGION || 'lon1'}}
           TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
@@ -61,7 +61,7 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && github.event_name == 'push'
         env:
-          TF_VAR_project_name: ${{ vars.PROJECT_NAME }}
+          TF_VAR_project_name: ${{ vars.PROJECT_NAME || 'pam'}}
           TF_VAR_env: ${{ vars.ENV || 'prod'}}
           TF_VAR_region: ${{ vars.REGION || 'lon1'}}
           TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
