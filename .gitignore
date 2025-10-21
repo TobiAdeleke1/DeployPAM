@@ -1,5 +1,6 @@
 # Terraform secrets and state
 infra/*.tfvars
+infra/*.auto.tfvars.json
 infra/environments/*.tfvars
 infra/.terraform/
 infra/.terraform.lock.hcl
