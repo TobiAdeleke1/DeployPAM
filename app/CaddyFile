@@ -1,5 +1,7 @@
 # Http only, remove auto_https off when DNS is added
-auto_https off
+{
+    auto_https off
+}
 
 :80 {
     encode gzip zstd
