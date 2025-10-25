@@ -12,7 +12,7 @@ done
 echo "PostgreSQL started"
 
 echo "Running migrations"
-python manage.py migration --noinput
+python manage.py migrate --noinput
 
 echo "Collecting static"
 python manage.py collectstatic --noinput
