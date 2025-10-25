@@ -22,7 +22,7 @@ resource "digitalocean_droplet" "web" {
 }
 
 resource "digitalocean_firewall" "web" {
-  name        = "${var.name}-fw"
+  name        = "${var.project_name}-fw"
   droplet_ids = [digitalocean_droplet.web.id]
 
   # SSH
