@@ -27,9 +27,9 @@ variable "droplet_image" {
   default = "ubuntu-25-04-x64"
 }
 
-variable "ssh_allowed_cidrs {
+variable "ssh_allowed_cidrs" {
   type        = list(string)
-  default     = ["0.0.0.0/0", "::/0]
+  default     = ["0.0.0.0/0", "::/0"]
   description = "CIDRs allowed to SSH (22)."
 }
 
@@ -39,8 +39,8 @@ variable "app_port" {
 }
 
 variable "compose_env" {
-  type = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
   description = "Extra env vars for .env on the droplet."
 }
 
@@ -55,6 +55,6 @@ variable "pg_node_count" {
 }
 
 variable "pg_version" {
-  type = string
+  type    = string
   default = "17"
 }
