@@ -32,7 +32,7 @@ locals {
     # Compose DB
     DB_NAME = digitalocean_database_db.pamdb.name
     DB_USER = digitalocean_database_user.pamuser.name
-    DB_PASS = digitalocean_database_user.pamuser.password
+    DB_PASSWORD = digitalocean_database_user.pamuser.password
     DB_HOST = "db"
     DB_PORT = "5432"
 
