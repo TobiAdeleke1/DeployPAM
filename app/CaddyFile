@@ -1,0 +1,31 @@
+# Http only, remove auto_https off when DNS is added
+auto_https off
+
+:80 {
+    encode gzip zstd
+
+    # Django API
+    @api path /api/*
+    handle @api {
+        reverse_proxy backend:8000
+    }
+
+    # Static SPA
+    handle {
+        root * /srv/frontend
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Cache static assets
+    @assets {
+        path *.js *.css *.svg *.png *.jpg *.jpeg *.gif
+    }
+    header @assets Cache-Control "public, max-age=31536000, immutable"
+
+    # Security headers
+    header {
+        X-Content-Type-Options "nosniff"
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+}
