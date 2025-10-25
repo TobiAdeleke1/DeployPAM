@@ -26,4 +26,3 @@ RUN chmod +x /pam-app/backend/wait-for-db.sh
 
 # Run database check first, then run app.
 ENTRYPOINT [ "/pam-app/backend/wait-for-db.sh" ]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "backend.wsgi:application"]
