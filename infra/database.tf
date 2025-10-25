@@ -85,7 +85,8 @@ resource "null_resource" "deploy_app" {
   provisioner "remote-exec" {
     inline = [
       "cd  /opt/app",
-      "tar -xzf app.tar.gz --strip-components=1",
+      "tar -xzf app.tar.gz",
+      "if [ -d app ]; then mv app/* .; rmdir app; fi",
       "docker compose pull || true",
       "docker compose build",
       "docker compose up -d",
