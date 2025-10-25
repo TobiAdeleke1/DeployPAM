@@ -1,4 +1,4 @@
-name: Deploy to Droplet
+name: Deploy to Droplet (Build frontend in CI, Caddy serves static)
 
 on:
   push:
@@ -18,13 +18,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
+      # Build Frontend, copy to app/frontend_dist/
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Frontend (vite)
+        working-directory: app/frontend
+        run: |
+          npm ci
+          npm run build
+          mkdir -p ../frontend_dist
+          cp -R dist/* ../frontend_dist/
+      
+      # Terraform deploy
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.13.4
         
       - name: Configure SSH Key for Digital Ocean
-        uses: webfactory/ssh-agent@v0.5.4
+        uses: webfactory/ssh-agent@v0.8.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
@@ -42,14 +57,13 @@ jobs:
             "ssh_private_key": $ssh_private_key
            }' > environments.auto.tfvars.json
          
-        
-      # Initialize a new or existing Terraform working directory
-      - name: Terraform Init
-        run: terraform init
-
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format
         run: terraform fmt -check
+      
+      # Initialize a new or existing Terraform working directory
+      - name: Terraform Init
+        run: terraform init
       
       # Generates an execution plan for Terraform
       - name: Terraform Plan
@@ -57,8 +71,6 @@ jobs:
           TF_VAR_project_name: ${{ vars.PROJECT_NAME || 'pam'}}
           TF_VAR_env: ${{ vars.ENV || 'prod'}}
           TF_VAR_region: ${{ vars.REGION || 'lon1'}}
-          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-          TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           TF_VAR_app_port: ${{ vars.APP_PORT || '80'}}
         run: terraform plan -out=tfplan
       
@@ -68,7 +80,11 @@ jobs:
           TF_VAR_project_name: ${{ vars.PROJECT_NAME || 'pam'}}
           TF_VAR_env: ${{ vars.ENV || 'prod'}}
           TF_VAR_region: ${{ vars.REGION || 'lon1'}}
-          TF_VAR_ssh_public_key: ${{ secrets.SSH_PUBLIC_KEY }}
-          TF_VAR_ssh_private_key: ${{ secrets.SSH_PRIVATE_KEY }}
           TF_VAR_app_port: ${{ vars.APP_PORT || '80'}}
+          TF_VAR_compose_env: >-
+            {
+              "DJANGO_SECRET_KEY": "${{ secrets.DJANGO_SECRET_KEY}}",
+              "DJANGO_ALLOWED_HOSTS": "${{ vars.DJANGO_ALLOWED_HOSTS || 'localhost 127.0.0.1'}}",
+              "DEBUG": "False"
+            }
         run: terraform apply -auto-approve tfplan
