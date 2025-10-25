@@ -51,7 +51,7 @@ locals {
 }
 
 # Bundle ./app and upload -> build/run on droplet
-data "archived_file" "app_tar" {
+data "archive_file" "app_tar" {
   type        = "tar.gz"
   source_dir  = "${path.module}/../app"
   output_path = "${path.module}/../app.tar.gz"
@@ -63,7 +63,7 @@ resource "null_resource" "deploy_app" {
     digitalocean_database_firewall.dbfirewall
   ]
 
-  triggers = { app_md5 = data.archived_file.app_tar.output_md5 }
+  triggers = { app_md5 = data.archive_file.app_tar.output_md5 }
 
   connection {
     type        = "ssh"
@@ -73,7 +73,7 @@ resource "null_resource" "deploy_app" {
   }
 
   provisioner "file" {
-    source      = data.archived_file.app_tar.output_path
+    source      = data.archive_file.app_tar.output_path
     destination = "/opt/app/app.tar.gz"
   }
 
