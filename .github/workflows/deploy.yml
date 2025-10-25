@@ -72,6 +72,12 @@ jobs:
           TF_VAR_env: ${{ vars.ENV || 'prod'}}
           TF_VAR_region: ${{ vars.REGION || 'lon1'}}
           TF_VAR_app_port: ${{ vars.APP_PORT || '80'}}
+          TF_VAR_compose_env: >-
+            {
+              "DJANGO_SECRET_KEY": "${{ secrets.DJANGO_SECRET_KEY}}",
+              "DJANGO_ALLOWED_HOSTS": "${{ vars.DJANGO_ALLOWED_HOSTS || 'localhost 127.0.0.1'}}",
+              "DEBUG": "False"
+            }
         run: terraform plan -out=tfplan
       
       - name: Terraform Apply
