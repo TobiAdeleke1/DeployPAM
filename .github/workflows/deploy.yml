@@ -56,7 +56,12 @@ jobs:
             "ssh_public_key": $ssh_public_key,
             "ssh_private_key": $ssh_private_key
            }' > environments.auto.tfvars.json
-         
+      
+      - name: Clean old Terraform lock and modules
+        run: |
+          rm -f .terraform.lock.hcl
+          rm -rf .terraform/
+
       # Checks that all Terraform configuration files adhere to a canonical format
       - name: Terraform Format
         run: terraform fmt -check
