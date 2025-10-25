@@ -33,7 +33,6 @@ node_modules
 dist
 dist-ssr
 *.local
-package-lock.json
 public/
 app/frontend_dist/
 
