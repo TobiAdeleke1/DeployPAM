@@ -30,11 +30,11 @@ locals {
 
   merged_env = merge(var.compose_env, {
     # Compose DB
-    DB_NAME = digitalocean_database_db.pamdb.name
-    DB_USER = digitalocean_database_user.pamuser.name
+    DB_NAME     = digitalocean_database_db.pamdb.name
+    DB_USER     = digitalocean_database_user.pamuser.name
     DB_PASSWORD = digitalocean_database_user.pamuser.password
-    DB_HOST = "db"
-    DB_PORT = "5432"
+    DB_HOST     = "db"
+    DB_PORT     = "5432"
 
     # Backend
     # Fails if secret key is not provided
