@@ -57,5 +57,5 @@ services:
 
 volumes:
   postgres_data:
-  candy_data:
-  candy_config:
+  caddy_data:
+  caddy_config:
