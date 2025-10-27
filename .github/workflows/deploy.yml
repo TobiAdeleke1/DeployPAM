@@ -37,6 +37,7 @@ jobs:
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.13.4
+          cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
         
       - name: Configure SSH Key for Digital Ocean
         uses: webfactory/ssh-agent@v0.8.0
