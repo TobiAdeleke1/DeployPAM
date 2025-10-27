@@ -1,6 +1,14 @@
 terraform {
   required_version = ">= 1.7.0"
 
+  cloud {
+    organization = "pam_terra"
+
+    workspaces {
+      name = "pam-space"
+    }
+  }
+
   required_providers {
     digitalocean = {
       source  = "digitalocean/digitalocean"
