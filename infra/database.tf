@@ -33,8 +33,8 @@ locals {
     DB_NAME     = digitalocean_database_db.pamdb.name
     DB_USER     = digitalocean_database_user.pamuser.name
     DB_PASSWORD = digitalocean_database_user.pamuser.password
-    DB_HOST     = "db"
-    DB_PORT     = "5432"
+    DB_HOST     = digitalocean_database_cluster.pg.host
+    DB_PORT     = digitalocean_database_cluster.pg.port
 
     # Backend
     # Fails if secret key is not provided
