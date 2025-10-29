@@ -1,25 +1,5 @@
 
 services:
-  db:
-    image: postgis/postgis:16-3.5
-    environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    env_file:
-      - .env
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      default:
-        aliases:
-          - ${DB_HOST}
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-
   backend:
     build:
       context: ./backend
@@ -35,9 +15,6 @@ services:
       - DATABASE_PORT=${DB_PORT}
       - DJANGO_ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
       - DEBUG=${DEBUG}
-    depends_on:
-      db:
-        condition: service_healthy
     expose:
       - "8000"
   
@@ -56,6 +33,5 @@ services:
 
 
 volumes:
-  postgres_data:
   caddy_data:
   caddy_config:
